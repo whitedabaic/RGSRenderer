@@ -69,8 +69,6 @@ Color Renderer::RenderPixel(int x, int y)
 	color.g = (float)y / (float)mViewportHeight;
 	color.b = 0.0f;
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Simulate some work being done
-
 	return color;
 }
 
