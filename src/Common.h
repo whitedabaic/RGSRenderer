@@ -71,7 +71,7 @@ inline Matrix4x4 MakeScale(float s)
 	);
 }
 
-inline Matrix4x4 MakeWorldMatrix(const Vector3f& position, const Vector3f& rotation, float scale)
+inline Matrix4x4 MakeWorldTransform(const Vector3f& position, const Vector3f& rotation, float scale)
 {
 	Matrix4x4 T = MakeTranslation(position);
 	Matrix4x4 R = MakeRotation(rotation);

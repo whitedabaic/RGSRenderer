@@ -1,6 +1,9 @@
 #pragma once
 #include "Common.h"
 #include "Camera.h"
+#include "Sphere.h"
+#include "Disk.h"
+#include "Triangle.h"
 
 class Renderer
 {
@@ -24,4 +27,8 @@ private:
 	std::atomic<bool> bCancelRender = false;
 
 	Camera mCamera;
+
+	Sphere* mSphere = nullptr;
+	Disk* mDisk = nullptr;
+	Triangle* mTriangle = nullptr;
 };

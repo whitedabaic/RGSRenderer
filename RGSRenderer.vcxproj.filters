@@ -27,6 +27,15 @@
     <ClInclude Include="src\Ray.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\Sphere.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Disk.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Triangle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -36,6 +45,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sphere.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Disk.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Triangle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

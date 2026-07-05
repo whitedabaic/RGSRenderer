@@ -7,13 +7,18 @@ Renderer::Renderer(int w, int h)
 	:mViewportHeight(h), mViewportWidth(w)
 {
     mCamera.Initialize(
-        Vector3f(10.0f, 5.0f, 20.0f),
-        Vector3f(10.0f, 10.0f, 30.0f),
+        Vector3f(0.0, 0.0, 0.0),
+        Vector3f(0.0, 0.0, 1.0),
         Vector3f(0.0f, 1.0f, 0.0f),
         glm::radians(60.0f),
         0.1f,
         1000.0f,
         w, h);
+
+	mTriangle = new Triangle(Vector3f(-1.0f, 1.0f, 4.0f), Vector3f(1.0f, 1.0f, 4.0f), Vector3f(0.0f, 2.0f, 4.0f), 
+        MakeWorldTransform(Vector3f(0, 0, 4), Vector3f(0, 0, glm::radians(60.0f)), 2.0f));
+	mSphere = new Sphere(Vector3f(0.0f, 0.5f, 5.0f), 1.0f);
+	mDisk = new Disk(Vector3f(0.0f, -1.0f, 5.0f), Vector3f(glm::radians(90.0f), 0.0f, 0.0f), 1.0f);
 }
 
 void Renderer::Run()
@@ -72,17 +77,36 @@ void Renderer::Run()
 
 Color Renderer::RenderPixel(int x, int y)
 {
-    Ray ray = mCamera.GetRay(x, y);
+    // SSAA
+    static const int N = 20;
+	Color resultColor(0, 0, 0);
 
-    Vector3f d = ray.d;
-    Color color = d * 0.5f + 0.5f;
+    for (int i = 0; i < N; i++)
+    {
+		float px = x + glm::linearRand(0.0f, 1.0f);
+        float py = y + glm::linearRand(0.0f, 1.0f);
+		Ray ray = mCamera.GetRay(px, py);
+		Intersection isect;
+        Color color(0, 0, 0);
 
-	//Color color;
-	//color.r = (float)x / (float)mViewportWidth;
-	//color.g = (float)y / (float)mViewportHeight;
-	//color.b = 0.0f;
+        if (mSphere->Intersect(ray, isect))
+        {
+            color += isect.normal * 0.5f + 0.5f;
+        }
 
-	return color;
+        if (mDisk->Intersect(ray, isect))
+        {
+            color += isect.normal * 0.5f + 0.5f;
+        }
+
+        if (mTriangle->Intersect(ray, isect))
+        {
+            color += isect.normal * 0.5f + 0.5f;
+        }
+
+        resultColor += (color / (float)N);
+    }
+	return resultColor;
 }
 
 void Renderer::RunRenderThread()
