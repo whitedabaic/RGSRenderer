@@ -3,22 +3,36 @@
 #include <thread>
 #include <vector>
 
-Renderer::Renderer(int w, int h)
-	:mViewportHeight(h), mViewportWidth(w)
+Renderer::Renderer(int w, int h, int samplePerPixel, const char* filepath)
+	:mViewportHeight(h), mViewportWidth(w), SamplePerPixel(samplePerPixel)
 {
-    mCamera.Initialize(
-        Vector3f(0.0, 0.0, 0.0),
-        Vector3f(0.0, 0.0, 1.0),
-        Vector3f(0.0f, 1.0f, 0.0f),
-        glm::radians(60.0f),
-        0.1f,
-        1000.0f,
-        w, h);
+    mScene = Scene::LoadSceneFromXML(filepath, w, h);
+    //mScene = new Scene();
 
-	mTriangle = new Triangle(Vector3f(-1.0f, 1.0f, 4.0f), Vector3f(1.0f, 1.0f, 4.0f), Vector3f(0.0f, 2.0f, 4.0f), 
-        MakeWorldTransform(Vector3f(0, 0, 4), Vector3f(0, 0, glm::radians(60.0f)), 2.0f));
-	mSphere = new Sphere(Vector3f(0.0f, 0.5f, 5.0f), 1.0f);
-	mDisk = new Disk(Vector3f(0.0f, -1.0f, 5.0f), Vector3f(glm::radians(90.0f), 0.0f, 0.0f), 1.0f);
+    //Camera camera;
+    //camera.Initialize(
+    //    Vector3f(0.0, 0.0, 0.0),
+    //    Vector3f(0.0, 0.0, 1.0),
+    //    Vector3f(0.0f, 1.0f, 0.0f),
+    //    glm::radians(60.0f),
+    //    0.1f,
+    //    1000.0f,
+    //    w, h
+    //);
+    //mScene->SetCamera(camera);
+
+    //SceneObject* pSceneObject = mScene->CreateSceneObject(Vector3f(0, 0, 5), Vector3f(0, 0, 0), 2.0f);
+    //pSceneObject->CreatePrimitive<Triangle>(Vector3f(-1, -1, 0), Vector3f(1, -1, 0), Vector3f(1, 1, 0));
+    //pSceneObject->CreatePrimitive<Triangle>(Vector3f(-1, -1, 0), Vector3f(1, 1, 0), Vector3f(-1, 1, 0));
+
+    //SceneObject* pSceneObject2 = mScene->CreateSceneObject(Vector3f(0, 0, 2), Vector3f(0, 0, 0), 1.0f);
+    //pSceneObject2->CreatePrimitive<Sphere>(0.5f);
+}
+
+Renderer::~Renderer()
+{
+    if (mScene)
+		delete mScene;
 }
 
 void Renderer::Run()
@@ -78,35 +92,31 @@ void Renderer::Run()
 Color Renderer::RenderPixel(int x, int y)
 {
     // SSAA
-    static const int N = 20;
-	Color resultColor(0, 0, 0);
+    const int N = SamplePerPixel;
+    Color resultColor(0, 0, 0);
 
     for (int i = 0; i < N; i++)
     {
-		float px = x + glm::linearRand(0.0f, 1.0f);
+        float px = x + glm::linearRand(0.0f, 1.0f);
         float py = y + glm::linearRand(0.0f, 1.0f);
-		Ray ray = mCamera.GetRay(px, py);
-		Intersection isect;
-        Color color(0, 0, 0);
-
-        if (mSphere->Intersect(ray, isect))
-        {
-            color += isect.normal * 0.5f + 0.5f;
-        }
-
-        if (mDisk->Intersect(ray, isect))
-        {
-            color += isect.normal * 0.5f + 0.5f;
-        }
-
-        if (mTriangle->Intersect(ray, isect))
-        {
-            color += isect.normal * 0.5f + 0.5f;
-        }
-
+        
+		Color color = RenderSubPixel(px, py);
         resultColor += (color / (float)N);
     }
-	return resultColor;
+    return resultColor;
+}
+
+Color Renderer::RenderSubPixel(float x, float y)
+{
+	Ray ray = mScene->GetCamera().GetRay(x, y);
+	Intersection isect;
+	Color color(0, 0, 0);
+
+    if (mScene->Intersect(ray, isect))
+    {
+		color = isect.normal * 0.5f + 0.5f;
+    }
+    return color;
 }
 
 void Renderer::RunRenderThread()

@@ -1,17 +1,17 @@
 #include "Sphere.h"
 #include "Disk.h"
+#include "SceneObject.h"
 
-Sphere::Sphere(const Vector3f& center, float radius)
-	:mRadius(radius)
+Sphere::Sphere(SceneObject* pSceneObject, float radius)
+	:Primitive(pSceneObject), mRadius(radius)
 {
-	mObjectToWorld = MakeWorldTransform(center, Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
-	mWorldToObject = glm::inverse(mObjectToWorld);
+	
 }
 
 bool Sphere::Intersect(Ray& ray, Intersection& isect) const
 {
 	//ray in object space
-	Ray r = mWorldToObject * ray;
+	Ray r = m_pSceneObject->GetWorldToObject() * ray;
 
 	float A = glm::dot(r.d, r.d);
 	float B = 2.0f * glm::dot(r.d, r.o);
@@ -43,8 +43,8 @@ bool Sphere::Intersect(Ray& ray, Intersection& isect) const
 	Vector3f p = r.o + t * r.d;
 	Vector3f n = glm::normalize(p);
 
-	isect.position = Vector3f(mObjectToWorld * Vector4f(p, 1.0f));
-	isect.normal = glm::normalize(Vector3f(mObjectToWorld * Vector4f(n, 0.0f)));
+	isect.position = Vector3f(m_pSceneObject->GetObjectToWorld() * Vector4f(p, 1.0f));
+	isect.normal = glm::normalize(Vector3f(m_pSceneObject->GetObjectToWorld() * Vector4f(n, 0.0f)));
 	isect.t = t;
 
 	return true;

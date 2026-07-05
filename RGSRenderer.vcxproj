@@ -138,9 +138,13 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Disk.h" />
+    <ClInclude Include="src\Primitive.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\SceneObject.h" />
     <ClInclude Include="src\Sphere.h" />
+    <ClInclude Include="src\tinyxml2.h" />
     <ClInclude Include="src\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
@@ -148,8 +152,14 @@
     <ClCompile Include="src\Disk.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SceneObject.cpp" />
     <ClCompile Include="src\Sphere.cpp" />
+    <ClCompile Include="src\tinyxml2.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="src\scene.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
