@@ -6,6 +6,14 @@
 Renderer::Renderer(int w, int h)
 	:mViewportHeight(h), mViewportWidth(w)
 {
+    mCamera.Initialize(
+        Vector3f(10.0f, 5.0f, 20.0f),
+        Vector3f(10.0f, 10.0f, 30.0f),
+        Vector3f(0.0f, 1.0f, 0.0f),
+        glm::radians(60.0f),
+        0.1f,
+        1000.0f,
+        w, h);
 }
 
 void Renderer::Run()
@@ -64,10 +72,15 @@ void Renderer::Run()
 
 Color Renderer::RenderPixel(int x, int y)
 {
-	Color color;
-	color.r = (float)x / (float)mViewportWidth;
-	color.g = (float)y / (float)mViewportHeight;
-	color.b = 0.0f;
+    Ray ray = mCamera.GetRay(x, y);
+
+    Vector3f d = ray.d;
+    Color color = d * 0.5f + 0.5f;
+
+	//Color color;
+	//color.r = (float)x / (float)mViewportWidth;
+	//color.g = (float)y / (float)mViewportHeight;
+	//color.b = 0.0f;
 
 	return color;
 }

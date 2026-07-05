@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.h"
+#include "Camera.h"
 
 class Renderer
 {
@@ -21,4 +22,6 @@ private:
 
 	std::atomic<int> mNextTileIndex = 0;
 	std::atomic<bool> bCancelRender = false;
+
+	Camera mCamera;
 };

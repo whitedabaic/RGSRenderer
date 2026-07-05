@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDIr)/glm;$(SolutionDIr)/minifb/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)/minifb/build/Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDIr)/dependencies/glm;$(SolutionDIr)/dependencies/minifb/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)/dependencies/minifb/build/Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)/glm;$(SolutionDir)/minifb/include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)/minifb/build/Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)/dependencies/glm;$(SolutionDir)/dependencies/minifb/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)/dependencies/minifb/build/Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -135,10 +135,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Common.h" />
+    <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <MiniFB.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 using Vector2f = glm::vec2;
 using Vector3f = glm::vec3;
