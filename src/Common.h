@@ -1,0 +1,97 @@
+#pragma once
+#include <iostream>
+#include <MiniFB.h>
+#include <glm/glm.hpp>
+
+using Vector2f = glm::vec2;
+using Vector3f = glm::vec3;
+using Vector4f = glm::vec4;
+
+using Vector2i = glm::ivec2;
+using Vector3i = glm::ivec3;
+using Vector4i = glm::ivec4;
+
+using Matrix2x2 = glm::mat2;
+using Matrix3x3 = glm::mat3;
+using Matrix4x4 = glm::mat4;
+
+using Color = glm::vec3;
+
+inline void DumpVector(const Vector3f& v) {
+	std::cout << "Vector3f(" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;
+}
+
+inline Matrix4x4 MakeTranslation(const Vector3f& t)
+{
+	return Matrix4x4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		t.x, t.y, t.z, 1.0f
+	);
+}
+
+inline Matrix4x4 MakeRotation(const Vector3f& euler)
+{
+	float cx = cosf(euler.x);
+	float sx = sinf(euler.x);
+	float cy = cosf(euler.y);
+	float sy = sinf(euler.y);
+	float cz = cosf(euler.z);
+	float sz = sinf(euler.z);
+	Matrix4x4 rx(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cx, sx, 0.0f,
+		0.0f, -sx, cx, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+	Matrix4x4 ry(
+		cy, 0.0f, -sy, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		sy, 0.0f, cy, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+	Matrix4x4 rz(
+		cz, sz, 0.0f, 0.0f,
+		-sz, cz, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+	return rz * ry * rx;
+}
+
+inline Matrix4x4 MakeScale(float s)
+{
+	return Matrix4x4(
+		s, 0.0f, 0.0f, 0.0f,
+		0.0f, s, 0.0f, 0.0f,
+		0.0f, 0.0f, s, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+inline Matrix4x4 MakeWorldMatrix(const Vector3f& position, const Vector3f& rotation, float scale)
+{
+	Matrix4x4 T = MakeTranslation(position);
+	Matrix4x4 R = MakeRotation(rotation);
+	Matrix4x4 S = MakeScale(scale);
+	return T * R * S;
+}
+
+inline Matrix3x3 MakeCoordinateSystem(const Vector3f& w)
+{
+	Vector3f u(1.0f, 0.0f, 0.0f);
+
+	if (abs(glm::dot(w, u)) > 0.99f)
+	{
+		u = Vector3f(0.0f, 1.0f, 0.0f);
+	}
+
+	Vector3f v = glm::cross(w, u);
+	u = glm::cross(v, w);
+
+	u = glm::normalize(u);
+	v = glm::normalize(v);
+
+	return Matrix3x3(u, v, w);
+}
