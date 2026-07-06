@@ -154,6 +154,49 @@ Scene* Scene::LoadSceneFromXML(const char* filepath, int W, int H)
             }
         }
     }
+
+    // Lights
+    XMLElement* pLightsElem = pRoot->FirstChildElement("Lights");
+    if (pLightsElem)
+    {
+        for (XMLElement* pElem = pLightsElem->FirstChildElement("DirectionalLight");
+            pElem != nullptr;
+            pElem = pElem->NextSiblingElement("DirectionalLight"))
+        {
+            Vector3f direction = ParseVector3f(GetChildText(pElem, "Direction"));
+            Color radiance = ParseVector3f(GetChildText(pElem, "Radiance"));
+            pScene->CreateLight<DirectionalLight>(direction, radiance);
+        }
+
+        //PointLight
+        for (XMLElement* pElem = pLightsElem->FirstChildElement("PointLight");
+            pElem != nullptr;
+            pElem = pElem->NextSiblingElement("PointLight"))
+        {
+            Vector3f position = ParseVector3f(GetChildText(pElem, "Position"));
+            Color intensity = ParseVector3f(GetChildText(pElem, "Intensity"));
+            Vector3f attenuations = ParseVector3f(GetChildText(pElem, "Attenuations"));
+            pScene->CreateLight<PointLight>(position, intensity, attenuations);
+        }
+
+        //SpotLight
+        for (XMLElement* pElem = pLightsElem->FirstChildElement("SpotLight");
+            pElem != nullptr;
+            pElem = pElem->NextSiblingElement("SpotLight"))
+        {
+            Vector3f position = ParseVector3f(GetChildText(pElem, "Position"));
+            Vector3f direction = ParseVector3f(GetChildText(pElem, "Direction"));
+            Color intensity = ParseVector3f(GetChildText(pElem, "Intensity"));
+            float innerAngle = GetChildFloat(pElem, "InnerAngle", 0.0f);
+            float outerAngle = GetChildFloat(pElem, "OuterAngle", 0.0f);
+            Vector3f attenuations = ParseVector3f(GetChildText(pElem, "Attenuations"));
+
+            innerAngle = glm::radians(innerAngle);
+            outerAngle = glm::radians(outerAngle);
+
+            pScene->CreateLight<SpotLight>(position, direction, intensity, innerAngle, outerAngle, attenuations);
+        }
+    }
     return pScene;
 }
 
@@ -182,4 +225,7 @@ Scene::~Scene()
 {
 	for (SceneObject* pSceneObject : mSceneObjects)
 		delete pSceneObject;
+
+    for (Light* pLight : mLights)
+        delete pLight;
 }

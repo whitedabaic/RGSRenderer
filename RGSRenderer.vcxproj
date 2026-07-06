@@ -138,6 +138,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\Disk.h" />
+    <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Primitive.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Renderer.h" />
