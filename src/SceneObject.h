@@ -3,6 +3,8 @@
 #include "Primitive.h"
 #include <vector>
 
+class Material;
+
 class SceneObject
 {
 public:
@@ -12,7 +14,6 @@ public:
 		mWorldToObject = glm::inverse(mObjectToWorld);
 	}
 	bool Intersect(Ray& ray, Intersection& isect) const;
-	// void AddPrimitive(Primitive* primitive) { mPrimitives.push_back(primitive); }
 
 	template<typename T, typename...Args>
 	T* CreatePrimitive(Args&&... args)
@@ -27,9 +28,14 @@ public:
 	Matrix4x4 GetObjectToWorld() const { return mObjectToWorld; }
 	Matrix4x4 GetWorldToObject() const { return mWorldToObject; }
 
+	void SetMaterial(Material* pMaterial) { m_pMaterial = pMaterial; }
+	Material* GetMaterial() const { return m_pMaterial; }
+
 private:
 	Matrix4x4 mObjectToWorld;
 	Matrix4x4 mWorldToObject;
+
+	Material* m_pMaterial = nullptr;
 
 	std::vector<Primitive*> mPrimitives;
 };

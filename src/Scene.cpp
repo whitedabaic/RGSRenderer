@@ -9,6 +9,7 @@
 #include "Triangle.h"
 #include "Sphere.h"
 #include "Disk.h"
+#include "Material.h"
 
 using namespace tinyxml2;
 
@@ -85,6 +86,30 @@ Scene* Scene::LoadSceneFromXML(const char* filepath, int W, int H)
         camera.Initialize(position, target, up, fovRad, nearZ, farZ, W, H );
         pScene->SetCamera(camera);
     }
+
+    // Materials
+    XMLElement* pMaterialsElem = pRoot->FirstChildElement("Materials");
+    if (pMaterialsElem)
+    {
+        for (XMLElement* pMatElem = pMaterialsElem->FirstChildElement("Material");
+            pMatElem != nullptr;
+            pMatElem = pMatElem->NextSiblingElement("Material"))
+        {
+            const char* nameText = GetChildText(pMatElem, "Name");
+            const char* typeText = GetChildText(pMatElem, "Type");
+            if (!nameText || !typeText)
+                continue;
+
+            std::string name = nameText;
+            std::string type = typeText;
+
+            if (type == "Lambert")
+            {
+                Color albedo = ParseVector3f(GetChildText(pMatElem, "Albedo"));
+                pScene->CreateMaterial<LambertMaterial>(name, albedo);
+            }
+        }
+    }
     // -------------------------
     // SceneObjects
     // -------------------------
@@ -113,6 +138,16 @@ Scene* Scene::LoadSceneFromXML(const char* filepath, int W, int H)
             if (!pSceneObject)
                 continue;
 
+            //Material
+            const char* materialName = GetChildText(pObjElem, "Material");
+            if (materialName)
+            {
+                Material* pMaterial = pScene->GetMaterial(materialName);
+                if (pMaterial)
+                    pSceneObject->SetMaterial(pMaterial);
+            }
+
+            // Primitives
             XMLElement* pPrimitivesElem = pObjElem->FirstChildElement("Primitives");
             if (pPrimitivesElem)
             {
@@ -228,4 +263,7 @@ Scene::~Scene()
 
     for (Light* pLight : mLights)
         delete pLight;
+
+    for (auto& pair : mMaterials)
+        delete pair.second;
 }

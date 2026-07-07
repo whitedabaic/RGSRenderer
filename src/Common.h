@@ -3,6 +3,7 @@
 #include <MiniFB.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtc/constants.hpp>
 
 using Vector2f = glm::vec2;
 using Vector3f = glm::vec3;
@@ -17,6 +18,9 @@ using Matrix3x3 = glm::mat3;
 using Matrix4x4 = glm::mat4;
 
 using Color = glm::vec3;
+
+const float PI = glm::pi<float>();
+const float INV_PI = 1.0f / PI;
 
 inline void DumpVector(const Vector3f& v) {
 	std::cout << "Vector3f(" << v.x << ", " << v.y << ", " << v.z << ")" << std::endl;

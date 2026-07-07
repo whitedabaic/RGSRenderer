@@ -2,6 +2,7 @@
 #include "SceneObject.h"
 #include "Camera.h"
 #include "Light.h"
+#include <map>
 
 class Scene
 {
@@ -26,8 +27,24 @@ public:
 	}
 
 	const std::vector<Light*>& GetLights() const { return mLights; }
+
+	template<typename T, typename... Args>
+	T* CreateMaterial(const std::string& name, Args&&... args)
+	{
+		T* material = new T( std::forward<Args>(args)...);
+		mMaterials.insert({ name, material });
+		return material;
+	}
+
+	Material* GetMaterial(const std::string& name) const
+	{
+		auto it = mMaterials.find(name);
+		return it != mMaterials.end() ? it->second : nullptr;
+	}
+
 private:
-	Camera						mCamera;
-	std::vector<SceneObject*>	mSceneObjects;
-	std::vector<Light*>			mLights;
+	Camera									mCamera;
+	std::vector<SceneObject*>				mSceneObjects;
+	std::vector<Light*>						mLights;
+	std::map<std::string, Material*>		mMaterials;
 };

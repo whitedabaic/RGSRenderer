@@ -2,6 +2,7 @@
 #include <MiniFB.h>
 #include <thread>
 #include <vector>
+#include "Material.h"
 
 Renderer::Renderer(int w, int h, int samplePerPixel, const char* filepath)
 	:mViewportHeight(h), mViewportWidth(w), SamplePerPixel(samplePerPixel)
@@ -92,7 +93,7 @@ Color Renderer::RenderPixel(int x, int y)
 Color Renderer::RenderSubPixel(float x, float y)
 {
 	Ray ray = mScene->GetCamera().GetRay(x, y);
-    Color color = GetIrradiance(ray);
+    Color color = GetRadiance(ray);
     return color;
 }
 
@@ -125,6 +126,45 @@ Color Renderer::GetIrradiance(const Ray& ray)
         E += L * glm::max(cosTheta, 0.0f);
     }
     return E;
+}
+
+Color Renderer::GetRadiance(const Ray& ray)
+{
+    Intersection isect;
+    SceneObject* pSceneObject = mScene->Intersect(ray, isect);
+    if (pSceneObject == nullptr)
+        return Color(0, 0, 0);
+
+    Material* pMaterial = pSceneObject->GetMaterial();
+    Color Lo(0, 0, 0);
+
+    Matrix3x3 localToWorld = MakeCoordinateSystem(isect.normal);
+    Matrix3x3 worldToLocal = glm::inverse(localToWorld);
+
+    Vector3f wo = worldToLocal * (-ray.d);
+
+    for (Light* pLight : mScene->GetLights())
+    {
+        Vector3f sourcePos;
+        Color L = pLight->GetRadiance(isect.position, sourcePos);
+
+        // ÇòShadowRay
+        Ray shadowRay;
+        shadowRay.o = isect.position;
+        shadowRay.d = glm::normalize(sourcePos - isect.position);
+        shadowRay.mint = 1e-3f;
+        shadowRay.maxt = glm::length(sourcePos - isect.position);
+
+        Intersection shadow_isect;
+        if (mScene->Intersect(shadowRay, shadow_isect))
+            continue;
+
+        Vector3f wi = worldToLocal * shadowRay.d;
+        float cosTheta = glm::dot(isect.normal, shadowRay.d);
+        Color brdf = pMaterial->BRDF(wo, wi);
+        Lo += brdf * L * glm::max(cosTheta, 0.0f);
+    }
+    return Lo;
 }
 
 void Renderer::RunRenderThread()
